@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.dao.UserDao">
+
+<resultMap id="UserData" type="com.company.model.User">
+    <id property="id" column="id"/>
+    <result property="address" column="address"/>
+    <result property="loginName" column="login_name"/>
+    <result property="userName" column="user_name"/>
+    <result property="email" column="email"/>
+    <result property="sex" column="sex"/>
+    <result property="password" column="password"/>
+</resultMap>
+
+    <select id="findAll"  resultType="com.company.model.User" useCache="false">
+        select t.* from `user` t
+    </select>
+
+    <select id="findById" resultType="com.company.model.User" useCache="false">
+        select t.* from `user` t where t.id=#{id}
+    </select>
+
+    <select id="findByName" resultType="com.company.model.User" useCache="false">
+        select t.* from `user` t where t.user_name=#{name}
+    </select>
+
+    <delete id="deleteById">
+        delete from `user` t where t.id=#{id}
+    </delete>
+
+    <update id="updateUser" parameterType="com.company.model.User">
+        update `user` t set t.login_name=#{user.loginName}
+        where t.id=#{user.id};
+    </update>
+
+    <insert id="insertUser" parameterType="com.company.model.User" useGeneratedKeys="true"
+            keyProperty="user.id">
+        insert into `user` (login_name,user_name,password,sex,email,address)
+        values (#{user.loginName},#{user.userName},#{user.password},#{user.sex},
+                #{user.email},#{user.address})
+    </insert>
+</mapper>
