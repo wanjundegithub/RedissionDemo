@@ -33,10 +33,4 @@
         where t.id=#{user.id};
     </update>
 
-    <insert id="insertUser" parameterType="com.company.model.User" useGeneratedKeys="true"
-            keyProperty="user.id">
-        insert into `user` (login_name,user_name,password,sex,email,address)
-        values (#{user.loginName},#{user.userName},#{user.password},#{user.sex},
-                #{user.email},#{user.address})
-    </insert>
 </mapper>

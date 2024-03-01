@@ -19,5 +19,4 @@ public interface UserDao {
 
     Integer updateUser(@Param("user") User user);
 
-    Integer insertUser(@Param("user") User user);
 }
