@@ -45,15 +45,12 @@ public class RangeListTest {
         rl.remove(3, 19);
         System.out.println(rl.toString()); // Should be: "[1, 3) [19, 21)"
         Assert.assertEquals(rl.toString(), "[1, 3) [19, 21)");
-        // 新增移除区间不存在的情况
         rl.remove(4, 18);
         System.out.println(rl.toString()); // Should be: "[1, 3) [19, 21)"
         Assert.assertEquals(rl.toString(), "[1, 3) [19, 21)");
-        // 新增添加区间覆盖所有分区的情况
         rl.add(1, 21);
         System.out.println(rl.toString()); // Should be: "[1, 21)"
         Assert.assertEquals(rl.toString(), "[1, 21)");
-        // 新增移除区间覆盖所有分区的情况
         rl.remove(1, 21);
         System.out.println(rl.toString()); // Should be: ""
         Assert.assertEquals(rl.toString(), "");

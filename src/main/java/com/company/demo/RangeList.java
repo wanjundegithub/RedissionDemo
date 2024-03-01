@@ -99,12 +99,12 @@ public class RangeList {
     for (Range range : rangeList) {
       int curStart = range.getStart();
       int curEnd = range.getEnd();
-      // not intersect eg:inputRange:[3, 6] , current range:[1, 2]
+      // not intersect eg:current range:[3, 6) , input range:[7, 10)
       if (curEnd < start) {
         res.add(range);
         continue;
       }
-      // not intersect eg:inputRange:[3, 6] , current range:[7, 10]
+      // not intersect eg:current range: [3, 6) ,input range:[1, 2)
       if (curStart > end) {
         if (!flag) {
           res.add(new Range(start, end));
@@ -113,26 +113,22 @@ public class RangeList {
         res.add(range);
         continue;
       }
-      // coverage interval eg:inputRange:[3, 6] , current range:[4, 5]
+      // coverage interval eg:current range:[3, 6) , input range:[2, 8)
       if (curStart > start && curEnd < end) {
         continue;
       }
-      //  新增区间前半部分与遍历的节点item相交，扩展新增区间start的范围至item[0]
-      //            // 新增区间(原来) = [5,10)
-      //            // 遍历节点item = [4, 6)
-      //            // 新增区间(更新后) = [4,10)
+      // intersect eg:current range:[3,6) input range:[4,7) expand input range
+      // new input range:[4, 7) -> [3,7)
       if (curStart < start) {
         start = curStart;
       }
-      // 3.3 新增区间后半部分与遍历的节点item相交，扩充新增区间end的范围至item[1]
-      // 新增区间(原来) = [5,10)
-      // 遍历节点item = [8, 12)
-      // 新增区间(更新后) = [5,12)
+      // intersect eg:current range:[3,6) input range:[2,5) expand input range
+      // new input range:[2,5) -> [2,6)
       if (curEnd > end) {
         end = curEnd;
       }
     }
-    // 4 边界处理，可能需要把新增区间插入到结果列表中
+    // handle boundary, it may be necessary to insert the new interval into the result list
     Range lastRange = res.size() == 0 ? new Range(start, end) : res.get(res.size() - 1);
     if (res.size() == 0 || lastRange.getEnd() < start) {
       res.add(new Range(start, end));
@@ -167,35 +163,29 @@ public class RangeList {
     for (Range range : rangeList) {
       int curStart = range.getStart();
       int curEnd = range.getEnd();
-      // 1 不相交，直接加入到结果集中
-      // 移除区间range = [10,12)
-      // 遍历节点item = [6,8) 或 [14,15)
+      //not intersect,eg:curRange:[3,6) inputRange [1,3) or [6,8)
       if (start >= curEnd || end <= curStart) {
         res.add(range);
         continue;
       }
-      // 2 以下是相交的情况
-      // 2.1 完全移除：移除区间range完全包含或覆盖遍历的节点item区间
-      // 移除区间range = [5,10)
+      // coverage interval eg:current range:[3, 6) , input range:[2, 8)
+      // remove current range from range list
       if (start <= curStart && end >= curEnd) {
         continue;
       }
-      // 移除部分区间
+      // remove sub range
       if (start <= curEnd) {
         if (end >= curEnd) {
-          // 2.2 移除后部分：移除区间range前部与遍历的节点item后部相交，缩短遍历节点item的end范围至range[0]
-          // 移除区间range =      [5,10)
-          // 遍历节点item =       [4,6)
-          // 遍历节点item(更新后) = [4,5)
+          //shrink current range eg: current range:[3,6) input range [4,7)
+          // current range [3,6)->[3,4)
           curEnd = start;
           range.setEnd(curEnd);
           res.add(range);
         } else {
-          // 2.3 移除中间部分：原来区间拆分成[item[0], range[0])与[range[1], item[1]) 2部分
-          // 移除区间range =      [5,10)
-          // 遍历节点item =          [4,10)
-          // 遍历节点item(更新后) =   [7,8)
-          // 遍历节点拆分成2部分 =     [4,7) [8,10)
+          //split current range,eg: current range:[3,6) input range [4,5)
+          //current range [3,6) -> [3,4) and [5,6)
+          //when input range [2,5)
+          //current range [3,6) -> [5,6)
           if (start > curStart) {
             res.add(new Range(curStart, start));
           }
@@ -203,10 +193,8 @@ public class RangeList {
         }
         continue;
       }
-      // 2.4 移除前部分：移除区间range后部分与遍历的节点item前部相交，缩短遍历节点start范围至range[1]
-      // 移除区间range =      [5,10)
-      // 遍历节点item =       [8,12)
-      // 遍历节点item(更新后)= [10,12)
+      //shrink rang,eg:current range:[3,6) input range [1,4)
+      //current range [3,6) -> [4,6)
       if (end > curStart) {
         curStart = end;
         range.setStart(curStart);
@@ -239,7 +227,6 @@ public class RangeList {
 
   /**
    * param validation
-   *
    * @param range array interval
    * @return boolean true=verification passed，false=verification failed
    */
